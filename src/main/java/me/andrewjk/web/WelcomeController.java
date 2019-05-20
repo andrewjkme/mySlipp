@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class WelcomeController {
 	
 	@GetMapping("/welcome")
-	public String welcome(String name, int age, Model model) {
-		System.out.println("name: "+ name + " age: " + age);
-		model.addAttribute("name", name);
-		model.addAttribute("age", age);
+	public String welcome(Model model) {
+		model.addAttribute("name", "javajigi");
+		model.addAttribute("age", 30);
+		model.addAttribute("company", "<b>github</b>");
 		return "welcome";
 	}
 }
