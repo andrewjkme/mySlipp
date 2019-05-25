@@ -40,4 +40,11 @@ public class User {
 		return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", eMail=" + eMail + "]";
 	}
 
+	public void update(User newUser) {
+		// TODO Auto-generated method stub
+		this.password = newUser.password;
+		this.name = newUser.name;
+		this.eMail = newUser.eMail;
+	}
+
 }
