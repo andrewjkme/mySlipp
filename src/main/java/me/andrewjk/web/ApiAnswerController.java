@@ -3,6 +3,7 @@ package me.andrewjk.web;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import me.andrewjk.domain.Answer;
 import me.andrewjk.domain.AnswerRepository;
 import me.andrewjk.domain.Question;
 import me.andrewjk.domain.QuestionRepository;
+import me.andrewjk.domain.Result;
 import me.andrewjk.domain.User;
 
 @RestController
@@ -31,7 +33,27 @@ public class ApiAnswerController {
 		User user = HttpSessionUtils.getUserFromSession(session);
 		Question question = questionRepositoy.findById(questionId).get();
 		Answer answer = new Answer(user, question, contents);
+		question.addAnswer();
 		return answerRepository.save(answer);
 		
+	}
+	
+	@DeleteMapping("/{id}")
+	public Result delete(@PathVariable Long questionId, @PathVariable long id, HttpSession session) {
+		if(!HttpSessionUtils.isLoginUser(session)) {
+			return Result.fail("로그인해야 합니다.");
+		}
+		
+		Answer answer = answerRepository.findById(id).get();
+		User loginUser = HttpSessionUtils.getUserFromSession(session);
+		if(!answer.isSameWriter(loginUser)) {
+			return Result.fail("자신의 글만 삭제할 수 있습니다.");
+		}
+		
+		answerRepository.deleteById(id);
+		Question question = questionRepositoy.findById(questionId).get();
+		question.deleteAnswer();
+		questionRepositoy.save(question);
+		return Result.ok();
 	}
 }
